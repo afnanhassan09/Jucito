@@ -1,0 +1,2415 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juicito — Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* ─── Reset & Tokens ─── */
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #0f1117;
+            --surface: #191c24;
+            --surface2: #21252f;
+            --surface3: #2a2f3a;
+            --border: #2e3340;
+            --accent: #e8873a;
+            --accent2: #d4722a;
+            --accent-soft: rgba(232, 135, 58, .12);
+            --green: #34d399;
+            --green-soft: rgba(52, 211, 153, .12);
+            --red: #f87171;
+            --red-soft: rgba(248, 113, 113, .12);
+            --blue: #60a5fa;
+            --blue-soft: rgba(96, 165, 250, .12);
+            --yellow: #fbbf24;
+            --yellow-soft: rgba(251, 191, 36, .12);
+            --text: #e4e6eb;
+            --text2: #9ca3af;
+            --text3: #6b7280;
+            --radius: 10px;
+            --radius-lg: 16px;
+            --shadow: 0 4px 24px rgba(0, 0, 0, .35);
+            --transition: all .25s cubic-bezier(.4, 0, .2, 1);
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* ─── Sidebar ─── */
+        .sidebar {
+            width: 260px;
+            min-width: 260px;
+            background: var(--surface);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            padding: 0;
+            z-index: 10;
+        }
+
+        .sidebar-brand {
+            padding: 28px 24px 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .sidebar-brand .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .sidebar-brand .logo-icon {
+            width: 42px;
+            height: 42px;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .sidebar-brand h2 {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text);
+            letter-spacing: -.3px;
+        }
+
+        .sidebar-brand span {
+            font-size: 12px;
+            color: var(--text3);
+            font-weight: 400;
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            padding: 16px 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .nav-label {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            color: var(--text3);
+            padding: 12px 12px 6px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 14px;
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text2);
+            text-decoration: none;
+            position: relative;
+        }
+
+        .nav-item:hover {
+            background: var(--surface2);
+            color: var(--text);
+        }
+
+        .nav-item.active {
+            background: var(--accent-soft);
+            color: var(--accent);
+        }
+
+        .nav-item.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 3px;
+            height: 24px;
+            background: var(--accent);
+            border-radius: 0 4px 4px 0;
+        }
+
+        .nav-item svg {
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
+        }
+
+        .nav-badge {
+            margin-left: auto;
+            background: var(--accent);
+            color: #fff;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+
+        .sidebar-footer {
+            padding: 16px 12px;
+            border-top: 1px solid var(--border);
+        }
+
+        .sidebar-footer .nav-item {
+            color: var(--text3);
+        }
+
+        /* ─── Main Content ─── */
+        .main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* ─── Top Bar ─── */
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 32px;
+            border-bottom: 1px solid var(--border);
+            background: var(--surface);
+            min-height: 70px;
+        }
+
+        .topbar-left h1 {
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: -.3px;
+        }
+
+        .topbar-left p {
+            font-size: 13px;
+            color: var(--text3);
+            margin-top: 2px;
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 8px 14px;
+        }
+
+        .search-box input {
+            background: transparent;
+            border: none;
+            outline: none;
+            color: var(--text);
+            font-family: inherit;
+            font-size: 13px;
+            width: 200px;
+        }
+
+        .search-box input::placeholder {
+            color: var(--text3);
+        }
+
+        .search-box svg {
+            width: 16px;
+            height: 16px;
+            color: var(--text3);
+        }
+
+        .avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), #c0582a);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        /* ─── Page Content ─── */
+        .page-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 28px 32px;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        /* ─── Cards Grid ─── */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            margin-bottom: 28px;
+        }
+
+        .stat-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            transition: var(--transition);
+        }
+
+        .stat-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .stat-card .stat-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            margin-bottom: 14px;
+        }
+
+        .stat-card .stat-icon.orange {
+            background: var(--accent-soft);
+            color: var(--accent);
+        }
+
+        .stat-card .stat-icon.green {
+            background: var(--green-soft);
+            color: var(--green);
+        }
+
+        .stat-card .stat-icon.blue {
+            background: var(--blue-soft);
+            color: var(--blue);
+        }
+
+        .stat-card .stat-icon.red {
+            background: var(--red-soft);
+            color: var(--red);
+        }
+
+        .stat-card .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .stat-card .stat-label {
+            font-size: 13px;
+            color: var(--text3);
+        }
+
+        /* ─── Section Header ─── */
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .section-header h2 {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        /* ─── Buttons ─── */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: var(--radius);
+            font-family: inherit;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .btn svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            opacity: .9;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 16px rgba(232, 135, 58, .35);
+        }
+
+        .btn-ghost {
+            background: var(--surface2);
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        .btn-ghost:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        .btn-danger {
+            background: var(--red-soft);
+            color: var(--red);
+        }
+
+        .btn-danger:hover {
+            background: var(--red);
+            color: #fff;
+        }
+
+        .btn-edit {
+            background: var(--blue-soft);
+            color: var(--blue);
+        }
+
+        .btn-edit:hover {
+            background: var(--blue);
+            color: #fff;
+        }
+
+        /* ─── Menu Items Grid ─── */
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 16px;
+        }
+
+        .menu-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 0;
+            overflow: hidden;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .menu-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow);
+        }
+
+        .menu-card-header {
+            padding: 20px 20px 0;
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+        }
+
+        .menu-card-cat {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: .8px;
+            color: var(--accent);
+            background: var(--accent-soft);
+            padding: 4px 10px;
+            border-radius: 6px;
+        }
+
+        .menu-card-avail {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 6px;
+        }
+
+        .menu-card-avail.yes {
+            background: var(--green-soft);
+            color: var(--green);
+        }
+
+        .menu-card-avail.no {
+            background: var(--red-soft);
+            color: var(--red);
+        }
+
+        .menu-card-body {
+            padding: 16px 20px;
+            flex: 1;
+        }
+
+        .menu-card-body h3 {
+            font-size: 17px;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .menu-card-body .desc {
+            font-size: 13px;
+            color: var(--text2);
+            line-height: 1.5;
+            margin-bottom: 12px;
+        }
+
+        .menu-card-body .price {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .menu-card-body .price small {
+            font-size: 13px;
+            font-weight: 400;
+            color: var(--text3);
+        }
+
+        .menu-card-footer {
+            padding: 14px 20px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            gap: 8px;
+        }
+
+        .menu-card-footer .btn {
+            flex: 1;
+            justify-content: center;
+        }
+
+        /* ─── Filter Bar ─── */
+        .filter-bar {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .filter-chip {
+            padding: 7px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: var(--text2);
+            transition: var(--transition);
+        }
+
+        .filter-chip:hover {
+            border-color: var(--accent);
+            color: var(--text);
+        }
+
+        .filter-chip.active {
+            background: var(--accent-soft);
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        /* ─── Modal ─── */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 100;
+            background: rgba(0, 0, 0, .6);
+            backdrop-filter: blur(6px);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-overlay.open {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            width: 480px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow);
+            animation: modalIn .3s ease;
+        }
+
+        @keyframes modalIn {
+            from {
+                opacity: 0;
+                transform: scale(.95) translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .modal-header h2 {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .modal-close {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: var(--surface2);
+            border-radius: 8px;
+            color: var(--text2);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+
+        .modal-close:hover {
+            background: var(--red-soft);
+            color: var(--red);
+        }
+
+        .modal-body {
+            padding: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text2);
+            margin-bottom: 6px;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            background: var(--surface2);
+            color: var(--text);
+            font-family: inherit;
+            font-size: 14px;
+            outline: none;
+            transition: var(--transition);
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-soft);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 16px;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+        }
+
+        .modal-footer {
+            padding: 16px 24px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        /* ─── Orders Page ─── */
+        .orders-tabs {
+            display: flex;
+            gap: 0;
+            margin-bottom: 24px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .order-tab {
+            padding: 12px 24px;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text3);
+            cursor: pointer;
+            transition: var(--transition);
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+        }
+
+        .order-tab:hover {
+            color: var(--text);
+        }
+
+        .order-tab.active {
+            color: var(--accent);
+            border-bottom-color: var(--accent);
+        }
+
+        .order-tab .tab-count {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--surface3);
+            font-size: 11px;
+            font-weight: 600;
+            padding: 1px 8px;
+            border-radius: 10px;
+            margin-left: 8px;
+            min-width: 22px;
+        }
+
+        .order-tab.active .tab-count {
+            background: var(--accent-soft);
+            color: var(--accent);
+        }
+
+        .orders-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .order-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            transition: var(--transition);
+        }
+
+        .order-card:hover {
+            border-color: var(--accent);
+        }
+
+        .order-card-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 14px;
+        }
+
+        .order-id {
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        .order-id span {
+            color: var(--accent);
+        }
+
+        .order-time {
+            font-size: 12px;
+            color: var(--text3);
+        }
+
+        .order-status-badge {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 4px 12px;
+            border-radius: 6px;
+            text-transform: uppercase;
+            letter-spacing: .5px;
+        }
+
+        .order-status-badge.new {
+            background: var(--yellow-soft);
+            color: var(--yellow);
+        }
+
+        .order-status-badge.preparing {
+            background: var(--blue-soft);
+            color: var(--blue);
+        }
+
+        .order-status-badge.dispatched {
+            background: var(--green-soft);
+            color: var(--green);
+        }
+
+        .order-items {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 14px;
+        }
+
+        .order-item-chip {
+            background: var(--surface2);
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            color: var(--text2);
+        }
+
+        .order-item-chip strong {
+            color: var(--text);
+        }
+
+        .order-card-bottom {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .order-address {
+            font-size: 13px;
+            color: var(--text3);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .order-address svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        .order-total {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .order-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 14px;
+            padding-top: 14px;
+            border-top: 1px solid var(--border);
+        }
+
+        /* ─── Placeholder page ─── */
+        .placeholder-page {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 60vh;
+            text-align: center;
+        }
+
+        .placeholder-page .placeholder-icon {
+            width: 80px;
+            height: 80px;
+            background: var(--surface2);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            margin-bottom: 20px;
+        }
+
+        .placeholder-page h2 {
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .placeholder-page p {
+            font-size: 14px;
+            color: var(--text3);
+            max-width: 360px;
+        }
+
+        /* ─── Empty State ─── */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text3);
+        }
+
+        .empty-state svg {
+            width: 48px;
+            height: 48px;
+            margin-bottom: 16px;
+            opacity: .4;
+        }
+
+        .empty-state h3 {
+            font-size: 16px;
+            color: var(--text2);
+            margin-bottom: 6px;
+        }
+
+        .empty-state p {
+            font-size: 13px;
+        }
+
+        /* ─── Toast ─── */
+        .toast-container {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 200;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .toast {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 14px 20px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text);
+            box-shadow: var(--shadow);
+            animation: toastIn .3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .toast.success {
+            border-left: 3px solid var(--green);
+        }
+
+        .toast.error {
+            border-left: 3px solid var(--red);
+        }
+
+        /* ─── New Order Notification ─── */
+        .order-notif-container {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            z-index: 300;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            pointer-events: none;
+        }
+
+        .order-notif {
+            pointer-events: all;
+            background: var(--surface);
+            border: 1px solid var(--accent);
+            border-left: 4px solid var(--accent);
+            border-radius: var(--radius-lg);
+            padding: 16px 20px;
+            width: 320px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, .5), 0 0 0 1px rgba(232, 135, 58, .15);
+            animation: notifSlideIn .4s cubic-bezier(.16, 1, .3, 1);
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .order-notif:hover {
+            transform: translateX(-4px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, .6), 0 0 0 1px rgba(232, 135, 58, .3);
+        }
+
+        .order-notif-icon {
+            width: 40px;
+            height: 40px;
+            min-width: 40px;
+            background: var(--accent-soft);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .order-notif-body {
+            flex: 1;
+        }
+
+        .order-notif-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: .6px;
+            margin-bottom: 3px;
+        }
+
+        .order-notif-msg {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text);
+            margin-bottom: 4px;
+        }
+
+        .order-notif-sub {
+            font-size: 12px;
+            color: var(--text3);
+        }
+
+        .order-notif-close {
+            background: none;
+            border: none;
+            color: var(--text3);
+            cursor: pointer;
+            font-size: 16px;
+            line-height: 1;
+            padding: 0;
+            transition: color .2s;
+        }
+
+        .order-notif-close:hover {
+            color: var(--text);
+        }
+
+        @keyframes notifSlideIn {
+            from {
+                opacity: 0;
+                transform: translateX(120%);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes notifSlideOut {
+            from {
+                opacity: 1;
+                transform: translateX(0);
+                max-height: 120px;
+                margin-bottom: 10px;
+            }
+
+            to {
+                opacity: 0;
+                transform: translateX(120%);
+                max-height: 0;
+                margin-bottom: 0;
+            }
+        }
+
+        @keyframes toastIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ─── Scrollbar ─── */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--surface3);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text3);
+        }
+
+        /* ─── CRM Dashboard ─── */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .kpi-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 22px 24px;
+            position: relative;
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .kpi-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+        }
+
+        .kpi-card.orange::before {
+            background: linear-gradient(90deg, var(--accent), #f59e0b);
+        }
+
+        .kpi-card.green::before {
+            background: linear-gradient(90deg, var(--green), #059669);
+        }
+
+        .kpi-card.blue::before {
+            background: linear-gradient(90deg, var(--blue), #3b82f6);
+        }
+
+        .kpi-card.red::before {
+            background: linear-gradient(90deg, var(--red), #dc2626);
+        }
+
+        .kpi-card.purple::before {
+            background: linear-gradient(90deg, #a78bfa, #7c3aed);
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow);
+            border-color: rgba(255, 255, 255, .1);
+        }
+
+        .kpi-top {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .kpi-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .kpi-icon.orange {
+            background: var(--accent-soft);
+        }
+
+        .kpi-icon.green {
+            background: var(--green-soft);
+        }
+
+        .kpi-icon.blue {
+            background: var(--blue-soft);
+        }
+
+        .kpi-icon.red {
+            background: var(--red-soft);
+        }
+
+        .kpi-icon.purple {
+            background: rgba(167, 139, 250, .12);
+        }
+
+        .kpi-badge {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 3px 9px;
+            border-radius: 20px;
+            background: var(--green-soft);
+            color: var(--green);
+        }
+
+        .kpi-badge.warn {
+            background: var(--yellow-soft);
+            color: var(--yellow);
+        }
+
+        .kpi-badge.critical {
+            background: var(--red-soft);
+            color: var(--red);
+        }
+
+        .kpi-value {
+            font-size: 30px;
+            font-weight: 700;
+            letter-spacing: -1px;
+            margin-bottom: 4px;
+        }
+
+        .kpi-label {
+            font-size: 12px;
+            color: var(--text3);
+            font-weight: 500;
+        }
+
+        /* Dashboard two-column layout */
+        .dash-grid {
+            display: grid;
+            grid-template-columns: 1fr 340px;
+            gap: 20px;
+        }
+
+        @media (max-width: 1100px) {
+            .dash-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Pipeline */
+        .pipeline-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .panel-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 18px 22px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .panel-head h3 {
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        .panel-head .live-dot {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            color: var(--green);
+            font-weight: 600;
+        }
+
+        .live-dot::before {
+            content: '';
+            width: 7px;
+            height: 7px;
+            background: var(--green);
+            border-radius: 50%;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: .5;
+                transform: scale(1.3);
+            }
+        }
+
+        .pipeline-cols {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 0;
+        }
+
+        .pipe-col {
+            padding: 16px;
+            border-right: 1px solid var(--border);
+            min-height: 200px;
+        }
+
+        .pipe-col:last-child {
+            border-right: none;
+        }
+
+        .pipe-col-head {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .8px;
+            margin-bottom: 14px;
+        }
+
+        .pipe-col-head .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .dot-yellow {
+            background: var(--yellow);
+        }
+
+        .dot-blue {
+            background: var(--blue);
+        }
+
+        .dot-green {
+            background: var(--green);
+        }
+
+        .pipe-order {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 12px 14px;
+            margin-bottom: 8px;
+            transition: var(--transition);
+            cursor: default;
+        }
+
+        .pipe-order:hover {
+            border-color: var(--accent);
+            background: var(--surface3);
+        }
+
+        .pipe-order-id {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 3px;
+        }
+
+        .pipe-order-items {
+            font-size: 11px;
+            color: var(--text2);
+            margin-bottom: 6px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .pipe-order-total {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .pipe-empty {
+            font-size: 12px;
+            color: var(--text3);
+            text-align: center;
+            padding: 24px 0;
+        }
+
+        /* Sidebar panels */
+        .side-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .panel-box {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+        }
+
+        .panel-body {
+            padding: 0 0 8px;
+        }
+
+        /* Top items */
+        .top-item-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 20px;
+            transition: var(--transition);
+        }
+
+        .top-item-row:hover {
+            background: var(--surface2);
+        }
+
+        .top-item-rank {
+            width: 24px;
+            height: 24px;
+            border-radius: 6px;
+            background: var(--surface3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text3);
+            flex-shrink: 0;
+        }
+
+        .top-item-rank.gold {
+            background: rgba(251, 191, 36, .15);
+            color: var(--yellow);
+        }
+
+        .top-item-rank.silver {
+            background: rgba(156, 163, 175, .15);
+            color: #9ca3af;
+        }
+
+        .top-item-rank.bronze {
+            background: rgba(180, 120, 70, .15);
+            color: #b47846;
+        }
+
+        .top-item-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .top-item-name {
+            font-size: 13px;
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .top-item-sub {
+            font-size: 11px;
+            color: var(--text3);
+        }
+
+        .top-item-rev {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--accent);
+            flex-shrink: 0;
+        }
+
+        /* Recent activity */
+        .activity-row {
+            display: flex;
+            gap: 12px;
+            padding: 10px 20px;
+            border-top: 1px solid var(--border);
+        }
+
+        .activity-row:first-child {
+            border-top: none;
+        }
+
+        .activity-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-top: 5px;
+            flex-shrink: 0;
+        }
+
+        .activity-text {
+            font-size: 12px;
+            color: var(--text2);
+            line-height: 1.5;
+        }
+
+        .activity-text strong {
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        .activity-time {
+            font-size: 11px;
+            color: var(--text3);
+            margin-top: 2px;
+        }
+
+        /* ─── Confirm Modal ─── */
+        .confirm-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 200;
+            background: rgba(0, 0, 0, .65);
+            backdrop-filter: blur(8px);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .confirm-overlay.open {
+            display: flex;
+        }
+
+        .confirm-box {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            width: 420px;
+            max-width: 92vw;
+            box-shadow: 0 8px 40px rgba(0, 0, 0, .5);
+            animation: modalIn .25s ease;
+            text-align: center;
+            overflow: hidden;
+        }
+
+        .confirm-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+            margin: 28px auto 16px;
+        }
+
+        .confirm-icon.warn {
+            background: var(--yellow-soft);
+            color: var(--yellow);
+        }
+
+        .confirm-icon.danger {
+            background: var(--red-soft);
+            color: var(--red);
+        }
+
+        .confirm-icon.info {
+            background: var(--green-soft);
+            color: var(--green);
+        }
+
+        .confirm-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            padding: 0 24px;
+        }
+
+        .confirm-msg {
+            font-size: 14px;
+            color: var(--text2);
+            line-height: 1.55;
+            padding: 0 24px 24px;
+        }
+
+        .confirm-actions {
+            display: flex;
+            border-top: 1px solid var(--border);
+        }
+
+        .confirm-actions button {
+            flex: 1;
+            padding: 14px 20px;
+            border: none;
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .confirm-actions .confirm-cancel {
+            background: var(--surface2);
+            color: var(--text2);
+            border-right: 1px solid var(--border);
+            border-radius: 0 0 0 var(--radius-lg);
+        }
+
+        .confirm-actions .confirm-cancel:hover {
+            background: var(--surface3);
+            color: var(--text);
+        }
+
+        .confirm-actions .confirm-ok {
+            border-radius: 0 0 var(--radius-lg) 0;
+        }
+
+        .confirm-actions .confirm-ok.primary {
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            color: #fff;
+        }
+
+        .confirm-actions .confirm-ok.primary:hover {
+            opacity: .9;
+        }
+
+        .confirm-actions .confirm-ok.danger {
+            background: var(--red);
+            color: #fff;
+        }
+
+        .confirm-actions .confirm-ok.danger:hover {
+            opacity: .85;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ═══════ Sidebar ═══════ -->
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <div class="logo">
+                <div class="logo-icon">🍽️</div>
+                <div>
+                    <h2>Juicito</h2>
+                    <span>Restaurant Admin</span>
+                </div>
+            </div>
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="nav-label">Main</div>
+
+            <a class="nav-item active" data-page="dashboard" onclick="switchPage('dashboard')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <rect x="3" y="3" width="7" height="7" rx="1" />
+                    <rect x="14" y="3" width="7" height="7" rx="1" />
+                    <rect x="3" y="14" width="7" height="7" rx="1" />
+                    <rect x="14" y="14" width="7" height="7" rx="1" />
+                </svg>
+                Dashboard
+            </a>
+
+            <a class="nav-item" data-page="menu" onclick="switchPage('menu')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <path d="M3 3h18v18H3z" />
+                    <path d="M12 8v8" />
+                    <path d="M8 12h8" />
+                </svg>
+                Menu
+            </a>
+
+            <a class="nav-item" data-page="orders" onclick="switchPage('orders')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2" />
+                    <rect x="9" y="3" width="6" height="4" rx="1" />
+                    <path d="M9 14l2 2 4-4" />
+                </svg>
+                Orders
+                <span class="nav-badge" id="ordersNavBadge" style="display:none">0</span>
+            </a>
+
+            <div class="nav-label">Settings</div>
+
+            <a class="nav-item" data-page="profile" onclick="switchPage('profile')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <circle cx="12" cy="8" r="4" />
+                    <path d="M5 20c0-4 3.5-7 7-7s7 3 7 7" />
+                </svg>
+                Profile
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <a class="nav-item" onclick="showToast('Logging out…', 'success')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" />
+                    <polyline points="16 17 21 12 16 7" />
+                    <line x1="21" y1="12" x2="9" y2="12" />
+                </svg>
+                Log Out
+            </a>
+        </div>
+    </aside>
+
+    <!-- ═══════ Main ═══════ -->
+    <div class="main">
+
+        <!-- Top bar -->
+        <header class="topbar">
+            <div class="topbar-left">
+                <h1 id="pageTitle">Dashboard</h1>
+                <p id="pageSubtitle">Welcome back, Chef!</p>
+            </div>
+            <div class="topbar-right">
+                <div class="search-box">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8" />
+                        <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                    </svg>
+                    <input type="text" placeholder="Search menu, orders…" id="globalSearch"
+                        oninput="handleSearch(this.value)">
+                </div>
+                <div class="avatar">PW</div>
+            </div>
+        </header>
+
+        <!-- Page content -->
+        <div class="page-content">
+
+            <!-- ════════════ Dashboard Page ════════════ -->
+            <div class="page active" id="page-dashboard">
+
+                <!-- KPI row -->
+                <div class="kpi-grid">
+                    <div class="kpi-card orange">
+                        <div class="kpi-top">
+                            <div class="kpi-icon orange">�</div>
+                            <span class="kpi-badge" id="kpiRevBadge">Today</span>
+                        </div>
+                        <div class="kpi-value" id="kpiRevenue">Rs. 0</div>
+                        <div class="kpi-label">Total Revenue</div>
+                    </div>
+                    <div class="kpi-card green">
+                        <div class="kpi-top">
+                            <div class="kpi-icon green">📋</div>
+                            <span class="kpi-badge" id="kpiOrdersBadge">All time</span>
+                        </div>
+                        <div class="kpi-value" id="kpiOrders">0</div>
+                        <div class="kpi-label">Total Orders</div>
+                    </div>
+                    <div class="kpi-card blue">
+                        <div class="kpi-top">
+                            <div class="kpi-icon blue">📊</div>
+                        </div>
+                        <div class="kpi-value" id="kpiAvg">Rs. 0</div>
+                        <div class="kpi-label">Avg. Order Value</div>
+                    </div>
+                    <div class="kpi-card red">
+                        <div class="kpi-top">
+                            <div class="kpi-icon red">⏳</div>
+                            <span class="kpi-badge warn" id="kpiPendingBadge">Live</span>
+                        </div>
+                        <div class="kpi-value" id="kpiPending">0</div>
+                        <div class="kpi-label">Pending Orders</div>
+                    </div>
+                    <div class="kpi-card purple">
+                        <div class="kpi-top">
+                            <div class="kpi-icon purple">🍴</div>
+                        </div>
+                        <div class="kpi-value" id="kpiMenuItems">0</div>
+                        <div class="kpi-label">Menu Items</div>
+                    </div>
+                </div>
+
+                <!-- Main + Side panels -->
+                <div class="dash-grid">
+
+                    <!-- Left: live pipeline -->
+                    <div class="pipeline-card">
+                        <div class="panel-head">
+                            <h3>🚦 Live Order Pipeline</h3>
+                            <span class="live-dot">LIVE</span>
+                        </div>
+                        <div class="pipeline-cols">
+                            <div class="pipe-col">
+                                <div class="pipe-col-head"><span class="dot dot-yellow"></span>New</div>
+                                <div id="pipeNew">
+                                    <p class="pipe-empty">No new orders</p>
+                                </div>
+                            </div>
+                            <div class="pipe-col">
+                                <div class="pipe-col-head"><span class="dot dot-blue"></span>Preparing</div>
+                                <div id="pipePreparing">
+                                    <p class="pipe-empty">Nothing cooking</p>
+                                </div>
+                            </div>
+                            <div class="pipe-col">
+                                <div class="pipe-col-head"><span class="dot dot-green"></span>Dispatched</div>
+                                <div id="pipeDispatched">
+                                    <p class="pipe-empty">None out yet</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right sidebar -->
+                    <div class="side-panel">
+
+                        <!-- Top items -->
+                        <div class="panel-box">
+                            <div class="panel-head">
+                                <h3>🏆 Top Items</h3>
+                            </div>
+                            <div class="panel-body" id="topItemsList"></div>
+                        </div>
+
+                        <!-- Recent activity -->
+                        <div class="panel-box">
+                            <div class="panel-head">
+                                <h3>🕐 Recent Activity</h3>
+                            </div>
+                            <div class="panel-body" id="recentActivity"></div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══════ Menu Page ═══════ -->
+            <div class="page" id="page-menu">
+                <div class="section-header">
+                    <h2>🍴 All Menu Items</h2>
+                    <button class="btn btn-primary" onclick="openMenuModal()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="12" y1="5" x2="12" y2="19" />
+                            <line x1="5" y1="12" x2="19" y2="12" />
+                        </svg>
+                        Add Item
+                    </button>
+                </div>
+
+                <div class="filter-bar" id="filterBar">
+                    <span class="filter-chip active" data-filter="all" onclick="filterMenu('all', this)">All</span>
+                </div>
+
+                <div class="menu-grid" id="menuGrid">
+                    <!-- cards injected dynamically -->
+                </div>
+            </div>
+
+            <!-- ═══════ Orders Page ═══════ -->
+            <div class="page" id="page-orders">
+                <div class="orders-tabs">
+                    <div class="order-tab active" data-status="new" onclick="switchOrderTab('new', this)">
+                        🆕 New Orders <span class="tab-count" id="countNew">0</span>
+                    </div>
+                    <div class="order-tab" data-status="preparing" onclick="switchOrderTab('preparing', this)">
+                        🍳 Preparing <span class="tab-count" id="countPreparing">0</span>
+                    </div>
+                    <div class="order-tab" data-status="dispatched" onclick="switchOrderTab('dispatched', this)">
+                        🚚 Dispatched <span class="tab-count" id="countDispatched">0</span>
+                    </div>
+                </div>
+
+                <div class="orders-list" id="ordersList">
+                    <div class="empty-state">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2" />
+                            <rect x="9" y="3" width="6" height="4" rx="1" />
+                        </svg>
+                        <h3>No orders yet</h3>
+                        <p>Orders from the WhatsApp bot will appear here in real-time.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══════ Profile Page ═══════ -->
+            <div class="page" id="page-profile">
+                <div class="placeholder-page">
+                    <div class="placeholder-icon">👤</div>
+                    <h2>Profile Settings</h2>
+                    <p>Your restaurant profile, notification preferences, and account settings will live here.</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ═══════ Add / Edit Menu Modal ═══════ -->
+    <div class="modal-overlay" id="menuModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 id="menuModalTitle">Add Menu Item</h2>
+                <button class="modal-close" onclick="closeMenuModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <form id="menuForm" onsubmit="return handleMenuSubmit(event)">
+                    <input type="hidden" id="f_id">
+
+                    <div class="form-group">
+                        <label>Item Name *</label>
+                        <input type="text" id="f_name" required placeholder="e.g. Chicken Tikka Pizza">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea id="f_desc" placeholder="A short, mouth-watering description…"></textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Category *</label>
+                            <input type="text" id="f_category" required placeholder="e.g. BBQ, Desi, Fast Food">
+                        </div>
+                        <div class="form-group">
+                            <label>Price (PKR) *</label>
+                            <input type="number" id="f_price" required placeholder="e.g. 1500" min="0" step="1">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Availability</label>
+                        <select id="f_available">
+                            <option value="true">✅ Available</option>
+                            <option value="false">❌ Out of Stock</option>
+                        </select>
+                    </div>
+
+                    <div class="modal-footer" style="padding:0;border:none;margin-top:8px;">
+                        <button type="button" class="btn btn-ghost" onclick="closeMenuModal()">Cancel</button>
+                        <button type="submit" class="btn btn-primary" id="menuSubmitBtn">Save Item</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════ Toast container ═══════ -->
+    <div class="toast-container" id="toastContainer"></div>
+    <!-- ═══════ New-order notification container ═══════ -->
+    <div class="order-notif-container" id="orderNotifContainer"></div>
+
+    <!-- ═══════ JS ═══════ -->
+    <script>
+        const API = '/api/menu';
+        let allMenuItems = [];
+        let currentFilter = 'all';
+
+        // ── Live Orders state ──
+        let allOrders = [];
+
+        // ── Page nav ──
+        function switchPage(page) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.getElementById('page-' + page).classList.add('active');
+            document.querySelector(`.nav-item[data-page="${page}"]`).classList.add('active');
+
+            const titles = { dashboard: 'Dashboard', menu: 'Menu Management', orders: 'Order Queue', profile: 'Profile' };
+            const subs = { dashboard: 'Welcome back, Chef!', menu: 'Manage your restaurant menu', orders: 'Track and manage incoming orders', profile: 'Your account settings' };
+            document.getElementById('pageTitle').textContent = titles[page] || page;
+            document.getElementById('pageSubtitle').textContent = subs[page] || '';
+
+            if (page === 'menu') loadMenu();
+            if (page === 'orders') loadOrders();
+        }
+
+        // ── Menu load ──
+        async function loadMenu() {
+            try {
+                const res = await fetch(API);
+                allMenuItems = await res.json();
+                renderMenuCards();
+                renderFilterBar();
+                updateDashStats();
+                updateDashboard();
+            } catch (err) {
+                showToast('Failed to load menu', 'error');
+            }
+        }
+
+        function renderFilterBar() {
+            const cats = [...new Set(allMenuItems.map(i => i.category || 'General'))];
+            const bar = document.getElementById('filterBar');
+            bar.innerHTML = `<span class="filter-chip ${currentFilter === 'all' ? 'active' : ''}" data-filter="all" onclick="filterMenu('all',this)">All</span>` + cats.map(c =>
+                `<span class="filter-chip ${currentFilter === c ? 'active' : ''}" data-filter="${c}" onclick="filterMenu('${c}',this)">${c}</span>`
+            ).join('');
+        }
+
+        function filterMenu(cat, el) {
+            currentFilter = cat;
+            document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+            if (el) el.classList.add('active');
+            renderMenuCards();
+        }
+
+        function renderMenuCards() {
+            const grid = document.getElementById('menuGrid');
+            let items = currentFilter === 'all' ? allMenuItems : allMenuItems.filter(i => i.category === currentFilter);
+
+            if (items.length === 0) {
+                grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M8 15s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg><h3>No items found</h3><p>Try a different filter or add a new menu item.</p></div>`;
+                return;
+            }
+
+            grid.innerHTML = items.map(item => `
+        <div class="menu-card">
+            <div class="menu-card-header">
+                <span class="menu-card-cat">${item.category || 'General'}</span>
+                <span class="menu-card-avail ${item.available ? 'yes' : 'no'}">${item.available ? 'Available' : 'Out of Stock'}</span>
+            </div>
+            <div class="menu-card-body">
+                <h3>${item.name}</h3>
+                <p class="desc">${item.description || 'No description provided.'}</p>
+                <div class="price">Rs. ${Number(item.price).toLocaleString()} <small>PKR</small></div>
+            </div>
+            <div class="menu-card-footer">
+                <button class="btn btn-sm btn-edit" onclick='openMenuModal(${JSON.stringify(item).replace(/'/g, "&#39;")})'>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                    Edit
+                </button>
+                <button class="btn btn-sm btn-danger" onclick="deleteMenuItem('${item.id}')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
+                    Delete
+                </button>
+            </div>
+        </div>
+    `).join('');
+        }
+
+        // ── Menu Modal ──
+        function openMenuModal(item) {
+            document.getElementById('menuModal').classList.add('open');
+            document.getElementById('menuModalTitle').textContent = item ? 'Edit Menu Item' : 'Add Menu Item';
+            document.getElementById('menuSubmitBtn').textContent = item ? 'Update Item' : 'Save Item';
+            if (item) {
+                document.getElementById('f_id').value = item.id || '';
+                document.getElementById('f_name').value = item.name || '';
+                document.getElementById('f_desc').value = item.description || '';
+                document.getElementById('f_category').value = item.category || '';
+                document.getElementById('f_price').value = item.price || 0;
+                document.getElementById('f_available').value = item.available ? 'true' : 'false';
+            } else {
+                document.getElementById('menuForm').reset();
+                document.getElementById('f_id').value = '';
+            }
+        }
+
+        function closeMenuModal() {
+            document.getElementById('menuModal').classList.remove('open');
+        }
+
+        async function handleMenuSubmit(e) {
+            e.preventDefault();
+            const id = document.getElementById('f_id').value;
+            const data = {
+                name: document.getElementById('f_name').value,
+                description: document.getElementById('f_desc').value,
+                category: document.getElementById('f_category').value,
+                price: parseFloat(document.getElementById('f_price').value),
+                available: document.getElementById('f_available').value === 'true',
+                tags: []
+            };
+
+            try {
+                let res;
+                if (id) {
+                    res = await fetch(`${API}/${id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+                } else {
+                    res = await fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+                }
+                if (res.ok) {
+                    showToast(id ? 'Item updated!' : 'Item added!', 'success');
+                    closeMenuModal();
+                    loadMenu();
+                } else { showToast('Failed to save', 'error'); }
+            } catch (err) { showToast('Network error', 'error'); }
+            return false;
+        }
+
+        async function deleteMenuItem(id) {
+            const ok = await showConfirmModal({
+                icon: '🗑️', iconType: 'danger',
+                title: 'Delete Menu Item?',
+                message: 'This item will be permanently removed. This action cannot be undone.',
+                confirmLabel: 'Delete', confirmType: 'danger'
+            });
+            if (!ok) return;
+            try {
+                const res = await fetch(`${API}/${id}`, { method: 'DELETE' });
+                if (res.ok) { showToast('Item deleted', 'success'); loadMenu(); }
+                else showToast('Failed to delete', 'error');
+            } catch (err) { showToast('Network error', 'error'); }
+        }
+
+        // ── Orders ──
+        let currentOrderTab = 'new';
+        const _seenOrderIds = new Set();
+        let _ordersInitialized = false;
+
+        async function loadOrders() {
+            try {
+                const res = await fetch('/api/orders');
+                const fetched = await res.json();
+
+                if (!_ordersInitialized) {
+                    // First load — seed the set so we don't spam on page open
+                    fetched.forEach(o => _seenOrderIds.add(o.id));
+                    _ordersInitialized = true;
+                } else {
+                    fetched.forEach(o => {
+                        if (!_seenOrderIds.has(o.id) && o.status !== 'cancelled') {
+                            _seenOrderIds.add(o.id);
+                            showOrderNotification(o);
+                        }
+                    });
+                }
+
+                allOrders = fetched;
+                renderOrders();
+                updateDashboard();
+            } catch (err) {
+                showToast('Failed to load orders', 'error');
+            }
+        }
+
+        function showOrderNotification(order) {
+            const container = document.getElementById('orderNotifContainer');
+            const totalPKR = order.total_formatted || (order.items || []).reduce((s, i) => s + (i.line_total_cents || 0), 0) / 100 + ' PKR';
+            const itemCount = (order.items || []).length;
+
+            const el = document.createElement('div');
+            el.className = 'order-notif';
+            el.innerHTML = `
+                <div class="order-notif-icon">🛎️</div>
+                <div class="order-notif-body">
+                    <div class="order-notif-title">New Order Received!</div>
+                    <div class="order-notif-msg">Order #${order.id}</div>
+                    <div class="order-notif-sub">${itemCount} item${itemCount !== 1 ? 's' : ''} · ${totalPKR}</div>
+                </div>
+                <button class="order-notif-close" title="Dismiss">✕</button>
+            `;
+
+            // Click on card → go to orders tab
+            el.addEventListener('click', (e) => {
+                if (!e.target.closest('.order-notif-close')) {
+                    switchPage('orders');
+                    dismissNotif(el);
+                }
+            });
+
+            // Dismiss button
+            el.querySelector('.order-notif-close').addEventListener('click', (e) => {
+                e.stopPropagation();
+                dismissNotif(el);
+            });
+
+            container.appendChild(el);
+
+            // Auto-dismiss after 6 seconds
+            setTimeout(() => dismissNotif(el), 6000);
+        }
+
+        function dismissNotif(el) {
+            if (!el.isConnected) return;
+            el.style.animation = 'notifSlideOut .35s cubic-bezier(.4,0,1,1) forwards';
+            setTimeout(() => el.remove(), 360);
+        }
+
+        function switchOrderTab(status, el) {
+            currentOrderTab = status;
+            document.querySelectorAll('.order-tab').forEach(t => t.classList.remove('active'));
+            if (el) el.classList.add('active');
+            renderOrders();
+        }
+
+        function renderOrders() {
+            const list = document.getElementById('ordersList');
+            const filtered = allOrders.filter(o => o.status === currentOrderTab);
+
+            // Update counts
+            document.getElementById('countNew').textContent = allOrders.filter(o => o.status === 'new').length;
+            document.getElementById('countPreparing').textContent = allOrders.filter(o => o.status === 'preparing').length;
+            document.getElementById('countDispatched').textContent = allOrders.filter(o => o.status === 'dispatched').length;
+
+            const totalNew = allOrders.filter(o => o.status === 'new').length;
+            const badge = document.getElementById('ordersNavBadge');
+            if (totalNew > 0) { badge.textContent = totalNew; badge.style.display = 'inline'; }
+            else badge.style.display = 'none';
+
+            if (filtered.length === 0) {
+                list.innerHTML = `<div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg><h3>No ${currentOrderTab} orders</h3><p>Orders will appear here as customers place them via the bot.</p></div>`;
+                return;
+            }
+
+            list.innerHTML = filtered.map(o => {
+                const timeObj = new Date(o.created_at);
+                const time = isNaN(timeObj) ? '-' : timeObj.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+                const date = isNaN(timeObj) ? '-' : timeObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+
+                let actionBtns = '';
+                if (o.status === 'new') {
+                    actionBtns = `<div class="order-actions"><span></span><div><button class="btn btn-sm btn-primary" onclick="moveOrder('${o.id}','preparing', true)">🍳 Confirm Payment & Start Preparing</button> <button class="btn btn-sm btn-danger" onclick="moveOrder('${o.id}','cancelled')">Cancel</button></div></div>`;
+                } else if (o.status === 'preparing') {
+                    actionBtns = `<div class="order-actions"><span></span><button class="btn btn-sm btn-primary" onclick="moveOrder('${o.id}','dispatched')">🚚 Mark Dispatched</button></div>`;
+                }
+
+                let screenshotHtml = '';
+                if (o.payment_screenshot) {
+                    screenshotHtml = `
+                    <div class="order-screenshot" style="margin-top:14px;padding-top:14px;border-top:1px dashed var(--border);">
+                        <p style="font-size:12px;color:var(--text3);margin-bottom:6px">Payment Screenshot:</p>
+                        <a href="${o.payment_screenshot}" target="_blank">
+                            <img src="${o.payment_screenshot}" alt="Payment Screenshot" style="max-width:100%;max-height:200px;border-radius:var(--radius);cursor:pointer;transition:var(--transition);" />
+                        </a>
+                    </div>`;
+                }
+
+                return `
+        <div class="order-card">
+            <div class="order-card-top">
+                <div>
+                    <div class="order-id">Order <span>#${o.id}</span></div>
+                    <div class="order-time">${date} · ${time}</div>
+                </div>
+                <span class="order-status-badge ${o.status}">${o.status}</span>
+            </div>
+            <div class="order-items">
+                ${o.items.map(i => `<span class="order-item-chip"><strong>${i.quantity}×</strong> ${i.name}</span>`).join('')}
+            </div>
+            <div class="order-card-bottom">
+                <span class="order-address">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                    ${o.address}
+                </span>
+                <span class="order-total">${o.total_formatted}</span>
+            </div>
+            ${screenshotHtml}
+            ${actionBtns}
+        </div>`;
+            }).join('');
+        }
+
+        async function moveOrder(id, newStatus, requireConfirm = false) {
+            if (requireConfirm) {
+                const ok = await showConfirmModal({
+                    icon: '💳', iconType: 'warn',
+                    title: 'Confirm Payment Received?',
+                    message: 'Are you sure the payment has been received and verified from the screenshot? This will start preparing the order.',
+                    confirmLabel: 'Yes, Payment Verified', confirmType: 'primary'
+                });
+                if (!ok) return;
+            } else if (newStatus === 'cancelled') {
+                const ok = await showConfirmModal({
+                    icon: '❌', iconType: 'danger',
+                    title: 'Cancel Order?',
+                    message: `Are you sure you want to cancel order #${id}? The customer will not be notified automatically.`,
+                    confirmLabel: 'Cancel Order', confirmType: 'danger'
+                });
+                if (!ok) return;
+            }
+
+            try {
+                const res = await fetch(`/api/orders/${id}/status`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status: newStatus })
+                });
+                if (res.ok) {
+                    showToast(`Order #${id} → ${newStatus}`, 'success');
+                    loadOrders(); // reload replacing static demo logic
+                } else {
+                    showToast('Failed to change status', 'error');
+                }
+            } catch (err) {
+                showToast('Network error', 'error');
+            }
+        }
+
+        // ── Dashboard stats ──
+        function updateDashStats() {
+            // legacy: keep menu count for kpi card
+            document.getElementById('kpiMenuItems').textContent = allMenuItems.length;
+        }
+
+        function updateDashboard() {
+            const completed = allOrders.filter(o => ['new', 'preparing', 'dispatched'].includes(o.status));
+            const totalRevCents = completed.reduce((s, o) => s + (o.items || []).reduce((a, i) => a + (i.line_total_cents || 0), 0), 0);
+            const totalOrders = completed.length;
+            const avgCents = totalOrders ? Math.round(totalRevCents / totalOrders) : 0;
+            const pending = allOrders.filter(o => o.status === 'new' || o.status === 'preparing').length;
+
+            document.getElementById('kpiRevenue').textContent = 'Rs. ' + (totalRevCents / 100).toLocaleString('en-PK', { maximumFractionDigits: 0 });
+            document.getElementById('kpiOrders').textContent = totalOrders;
+            document.getElementById('kpiAvg').textContent = 'Rs. ' + (avgCents / 100).toLocaleString('en-PK', { maximumFractionDigits: 0 });
+            document.getElementById('kpiPending').textContent = pending;
+            document.getElementById('kpiMenuItems').textContent = allMenuItems.length;
+
+            // pending badge color
+            const pendBadge = document.getElementById('kpiPendingBadge');
+            pendBadge.className = 'kpi-badge ' + (pending > 5 ? 'critical' : pending > 0 ? 'warn' : '');
+
+            // ── Pipeline ──
+            function pipeCards(orders) {
+                if (!orders.length) return '';
+                return orders.map(o => {
+                    const names = (o.items || []).map(i => `${i.quantity}× ${i.name}`).join(', ');
+                    const total = 'Rs. ' + ((o.items || []).reduce((s, i) => s + (i.line_total_cents || 0), 0) / 100).toLocaleString('en-PK', { maximumFractionDigits: 0 });
+                    return `<div class="pipe-order">
+                        <div class="pipe-order-id">#${o.id}</div>
+                        <div class="pipe-order-items" title="${names}">${names}</div>
+                        <div class="pipe-order-total">${total}</div>
+                    </div>`;
+                }).join('');
+            }
+
+            const newOrders = allOrders.filter(o => o.status === 'new');
+            const prepOrders = allOrders.filter(o => o.status === 'preparing');
+            const dispOrders = allOrders.filter(o => o.status === 'dispatched');
+
+            document.getElementById('pipeNew').innerHTML = pipeCards(newOrders) || '<p class="pipe-empty">No new orders</p>';
+            document.getElementById('pipePreparing').innerHTML = pipeCards(prepOrders) || '<p class="pipe-empty">Nothing cooking</p>';
+            document.getElementById('pipeDispatched').innerHTML = pipeCards(dispOrders) || '<p class="pipe-empty">None out yet</p>';
+
+            // ── Top items by revenue ──
+            const itemMap = {};
+            allOrders.forEach(o => (o.items || []).forEach(i => {
+                if (!itemMap[i.name]) itemMap[i.name] = { qty: 0, rev: 0 };
+                itemMap[i.name].qty += i.quantity || 0;
+                itemMap[i.name].rev += i.line_total_cents || 0;
+            }));
+            const topItems = Object.entries(itemMap).sort((a, b) => b[1].rev - a[1].rev).slice(0, 5);
+            const rankClass = ['gold', 'silver', 'bronze', '', ''];
+            const topHtml = topItems.length ? topItems.map(([name, d], idx) => `
+                <div class="top-item-row">
+                    <div class="top-item-rank ${rankClass[idx] || ''}">${idx + 1}</div>
+                    <div class="top-item-info">
+                        <div class="top-item-name">${name}</div>
+                        <div class="top-item-sub">${d.qty} sold</div>
+                    </div>
+                    <div class="top-item-rev">Rs. ${(d.rev / 100).toLocaleString('en-PK', { maximumFractionDigits: 0 })}</div>
+                </div>`).join('') :
+                '<div style="padding:20px;text-align:center;font-size:12px;color:var(--text3)">No data yet</div>';
+            document.getElementById('topItemsList').innerHTML = topHtml;
+
+            // ── Recent activity (last 8 orders sorted by time) ──
+            const recent = [...allOrders].sort((a, b) => new Date(b.created_at) - new Date(a.created_at)).slice(0, 8);
+            const statusColor = { new: 'dot-yellow', preparing: 'dot-blue', dispatched: 'dot-green', cancelled: 'dot-red', pending_payment: '' };
+            const statusLabel = { new: 'New order', preparing: 'Preparing', dispatched: 'Dispatched', cancelled: 'Cancelled', pending_payment: 'Awaiting payment' };
+            const actHtml = recent.length ? recent.map(o => {
+                const t = new Date(o.created_at);
+                const timeStr = isNaN(t) ? '' : t.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+                const col = statusColor[o.status] || '';
+                return `<div class="activity-row">
+                    <span class="activity-dot ${col}" style="background:${col === 'dot-yellow' ? 'var(--yellow)' : col === 'dot-blue' ? 'var(--blue)' : col === 'dot-green' ? 'var(--green)' : 'var(--red)'}"></span>
+                    <div>
+                        <div class="activity-text"><strong>#${o.id}</strong> — ${statusLabel[o.status] || o.status}</div>
+                        <div class="activity-time">${timeStr}</div>
+                    </div>
+                </div>`;
+            }).join('') :
+                '<div style="padding:20px;text-align:center;font-size:12px;color:var(--text3)">No activity yet</div>';
+            document.getElementById('recentActivity').innerHTML = actHtml;
+        }
+
+        // ── Search ──
+        function handleSearch(q) {
+            q = q.trim().toLowerCase();
+            if (!q) { currentFilter = 'all'; renderMenuCards(); return; }
+            const page = document.querySelector('.page.active').id;
+            if (page === 'page-menu') {
+                const filtered = allMenuItems.filter(i => i.name.toLowerCase().includes(q) || (i.category || '').toLowerCase().includes(q) || (i.description || '').toLowerCase().includes(q));
+                const grid = document.getElementById('menuGrid');
+                if (filtered.length === 0) {
+                    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><h3>No results for "${q}"</h3></div>`;
+                    return;
+                }
+                // temporarily override
+                const old = allMenuItems;
+                allMenuItems = filtered;
+                currentFilter = 'all';
+                renderMenuCards();
+                allMenuItems = old;
+            }
+        }
+
+        // ── Toast ──
+        function showToast(msg, type = 'success') {
+            const c = document.getElementById('toastContainer');
+            const t = document.createElement('div');
+            t.className = `toast ${type}`;
+            t.innerHTML = `${type === 'success' ? '✅' : '❌'} ${msg}`;
+            c.appendChild(t);
+            setTimeout(() => { t.style.opacity = '0'; t.style.transform = 'translateY(10px)'; setTimeout(() => t.remove(), 300); }, 3000);
+        }
+
+        // ── Confirm Modal ──
+        let _confirmResolve = null;
+
+        function showConfirmModal({ icon = '⚠️', iconType = 'warn', title = 'Are you sure?', message = '', confirmLabel = 'Confirm', cancelLabel = 'Cancel', confirmType = 'primary' } = {}) {
+            return new Promise(resolve => {
+                _confirmResolve = resolve;
+                document.getElementById('confirmIcon').className = `confirm-icon ${iconType}`;
+                document.getElementById('confirmIcon').textContent = icon;
+                document.getElementById('confirmTitle').textContent = title;
+                document.getElementById('confirmMsg').textContent = message;
+                const okBtn = document.getElementById('confirmOkBtn');
+                okBtn.textContent = confirmLabel;
+                okBtn.className = `confirm-ok ${confirmType}`;
+                document.getElementById('confirmCancelBtn').textContent = cancelLabel;
+                document.getElementById('confirmOverlay').classList.add('open');
+            });
+        }
+
+        function closeConfirmModal(result) {
+            document.getElementById('confirmOverlay').classList.remove('open');
+            if (_confirmResolve) { _confirmResolve(result); _confirmResolve = null; }
+        }
+
+        // ── Init ──
+        loadMenu();
+        loadOrders();
+        setInterval(loadOrders, 1000); // Poll for new orders every second
+    </script>
+
+    <!-- Confirm Modal -->
+    <div class="confirm-overlay" id="confirmOverlay" onclick="if(event.target===this)closeConfirmModal(false)">
+        <div class="confirm-box">
+            <div class="confirm-icon warn" id="confirmIcon">⚠️</div>
+            <div class="confirm-title" id="confirmTitle">Are you sure?</div>
+            <div class="confirm-msg" id="confirmMsg"></div>
+            <div class="confirm-actions">
+                <button class="confirm-cancel" id="confirmCancelBtn" onclick="closeConfirmModal(false)">Cancel</button>
+                <button class="confirm-ok primary" id="confirmOkBtn" onclick="closeConfirmModal(true)">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>

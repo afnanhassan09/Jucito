@@ -1,0 +1,13 @@
+{
+  "name": "purewaterbot",
+  "version": "1.0.0",
+  "description": "This repo contains the **Phase 1 skeleton**: data structures, an in-memory `SessionManager`, a dummy menu, and a mock terminal chat loop (no WhatsApp integration yet).",
+  "main": "cli.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs"
+}

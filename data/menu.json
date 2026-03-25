@@ -1,0 +1,614 @@
+[
+  {
+    "id": "CRP",
+    "name": "Chicken Roll Paratha",
+    "price": 240,
+    "category": "Fast Food",
+    "available": true,
+    "description": "Juicy spiced chicken strips wrapped in a soft, buttery paratha. A classic street-style roll that hits every time.",
+    "tags": [
+      "roll",
+      "paratha",
+      "chicken",
+      "street food",
+      "bestseller",
+      "filling"
+    ]
+  },
+  {
+    "id": "CCRP",
+    "name": "Chicken Cheese Roll Paratha",
+    "price": 280,
+    "category": "Fast Food",
+    "available": true,
+    "description": "Our classic chicken paratha roll taken up a notch with a generous layer of melted cheese inside.",
+    "tags": [
+      "roll",
+      "paratha",
+      "chicken",
+      "cheese",
+      "indulgent",
+      "street food"
+    ]
+  },
+  {
+    "id": "ZR",
+    "name": "Zinger Roll",
+    "price": 280,
+    "category": "Fast Food",
+    "available": true,
+    "description": "A crispy fried zinger chicken fillet rolled up with fresh veggies and house sauce in a soft wrap.",
+    "tags": [
+      "roll",
+      "zinger",
+      "crispy",
+      "fried chicken",
+      "spicy",
+      "popular"
+    ]
+  },
+  {
+    "id": "ZRC",
+    "name": "Zinger Roll Cheese",
+    "price": 320,
+    "category": "Fast Food",
+    "available": true,
+    "description": "The Zinger Roll upgraded with melted cheese — extra rich, extra satisfying.",
+    "tags": [
+      "roll",
+      "zinger",
+      "crispy",
+      "cheese",
+      "fried chicken",
+      "indulgent"
+    ]
+  },
+  {
+    "id": "CS",
+    "name": "Chicken Shawarma",
+    "price": 220,
+    "category": "Fast Food",
+    "available": true,
+    "description": "Classic Islamabad-style chicken shawarma with garlic sauce, fresh veggies, and soft bread. A local favourite.",
+    "tags": [
+      "shawarma",
+      "chicken",
+      "classic",
+      "affordable",
+      "street food",
+      "bestseller"
+    ]
+  },
+  {
+    "id": "CSS",
+    "name": "Chicken Special Shawarma",
+    "price": 280,
+    "category": "Fast Food",
+    "available": true,
+    "description": "Our premium shawarma with extra fillings, special house sauce, and more chicken than the regular version.",
+    "tags": [
+      "shawarma",
+      "chicken",
+      "special",
+      "premium",
+      "loaded",
+      "street food"
+    ]
+  },
+  {
+    "id": "CN",
+    "name": "Chicken Nuggets",
+    "price": 260,
+    "category": "Fast Food",
+    "available": true,
+    "description": "6 golden, crispy-fried chicken nuggets with a tender juicy inside. Perfect for sharing or snacking.",
+    "tags": [
+      "nuggets",
+      "crispy",
+      "fried",
+      "6pcs",
+      "snack",
+      "kids friendly"
+    ]
+  },
+  {
+    "id": "CW",
+    "name": "Chicken Wings",
+    "price": 310,
+    "category": "Fast Food",
+    "available": true,
+    "description": "6 pieces of well-seasoned, crispy fried chicken wings. Great with any dipping sauce.",
+    "tags": [
+      "wings",
+      "crispy",
+      "fried",
+      "6pcs",
+      "spicy",
+      "snack"
+    ]
+  },
+  {
+    "id": "CB",
+    "name": "Chicken Bites",
+    "price": 290,
+    "category": "Fast Food",
+    "available": true,
+    "description": "6 pieces of bite-sized crispy fried chicken chunks. Light, easy to eat, and full of flavour.",
+    "tags": [
+      "bites",
+      "crispy",
+      "fried",
+      "6pcs",
+      "snack",
+      "light"
+    ]
+  },
+  {
+    "id": "FF",
+    "name": "French Fries",
+    "price": 260,
+    "category": "Fast Food",
+    "available": true,
+    "description": "Classic golden crispy fries, lightly salted and served hot. A crowd-pleaser with any meal.",
+    "tags": [
+      "fries",
+      "crispy",
+      "potato",
+      "classic",
+      "side",
+      "vegetarian"
+    ]
+  },
+  {
+    "id": "CHF",
+    "name": "Cheese Fries",
+    "price": 320,
+    "category": "Fast Food",
+    "available": true,
+    "description": "Hot crispy fries smothered in rich melted cheese sauce. Indulgent and absolutely worth it.",
+    "tags": [
+      "fries",
+      "cheese",
+      "indulgent",
+      "loaded",
+      "side",
+      "vegetarian"
+    ]
+  },
+  {
+    "id": "MF",
+    "name": "Masala Fries",
+    "price": 270,
+    "category": "Fast Food",
+    "available": true,
+    "description": "Crispy fries tossed in a bold desi masala blend — spicy, tangy, and completely addictive.",
+    "tags": [
+      "fries",
+      "masala",
+      "spicy",
+      "desi",
+      "side",
+      "vegetarian"
+    ]
+  },
+  {
+    "id": "MGF",
+    "name": "Mayo Garlic Fries",
+    "price": 310,
+    "category": "Fast Food",
+    "available": true,
+    "description": "Golden fries drizzled with creamy mayo garlic sauce — rich, garlicky, and hard to put down.",
+    "tags": [
+      "fries",
+      "mayo",
+      "garlic",
+      "creamy",
+      "side",
+      "vegetarian"
+    ]
+  },
+  {
+    "id": "MGS",
+    "name": "Mayo Garlic Sauce",
+    "price": 40,
+    "category": "Sauce",
+    "available": true,
+    "description": "Creamy, garlicky dipping sauce. Goes perfectly with fries, rolls, and wraps.",
+    "tags": [
+      "sauce",
+      "addon",
+      "garlic",
+      "mayo",
+      "dip",
+      "creamy"
+    ]
+  },
+  {
+    "id": "MNS",
+    "name": "Mint Garlic Sauce",
+    "price": 30,
+    "category": "Sauce",
+    "available": true,
+    "description": "A refreshing mint and garlic sauce with a light kick. Classic pairing for shawarmas and rolls.",
+    "tags": [
+      "sauce",
+      "addon",
+      "mint",
+      "garlic",
+      "fresh",
+      "dip"
+    ]
+  },
+  {
+    "id": "PPS",
+    "name": "Peri Peri Sauce",
+    "price": 70,
+    "category": "Sauce",
+    "available": true,
+    "description": "Bold, fiery peri peri sauce with layers of heat and smokiness. For the spice lovers.",
+    "tags": [
+      "sauce",
+      "addon",
+      "spicy",
+      "peri peri",
+      "hot",
+      "dip"
+    ]
+  },
+  {
+    "id": "SS",
+    "name": "Special Sauce",
+    "price": 60,
+    "category": "Sauce",
+    "available": true,
+    "description": "Our signature house blend — tangy, creamy, and slightly spiced. Works with everything on the menu.",
+    "tags": [
+      "sauce",
+      "addon",
+      "special",
+      "house sauce",
+      "dip",
+      "signature"
+    ]
+  },
+  {
+    "id": "BBS",
+    "name": "Bar BQ Sauce",
+    "price": 60,
+    "category": "Sauce",
+    "available": true,
+    "description": "Smoky, sweet, and tangy BBQ dipping sauce. Pairs best with wings, nuggets, and bites.",
+    "tags": [
+      "sauce",
+      "addon",
+      "bbq",
+      "smoky",
+      "sweet",
+      "dip"
+    ]
+  },
+  {
+    "id": "TI",
+    "name": "Thousand Island",
+    "price": 60,
+    "category": "Sauce",
+    "available": true,
+    "description": "Classic sweet and tangy Thousand Island dressing — great as a dip or drizzled over fries.",
+    "tags": [
+      "sauce",
+      "addon",
+      "thousand island",
+      "sweet",
+      "tangy",
+      "dip"
+    ]
+  },
+  {
+    "id": "SL",
+    "name": "Sweet Lassi",
+    "price": 240,
+    "category": "Lassi",
+    "available": true,
+    "description": "Chilled, creamy yogurt drink sweetened to perfection. A refreshing classic to cool you down.",
+    "tags": [
+      "lassi",
+      "drink",
+      "sweet",
+      "yogurt",
+      "refreshing",
+      "classic"
+    ]
+  },
+  {
+    "id": "NL",
+    "name": "Namkeen Lassi",
+    "price": 240,
+    "category": "Lassi",
+    "available": true,
+    "description": "Savoury salted lassi with a touch of spice — the traditional Punjabi way to have it.",
+    "tags": [
+      "lassi",
+      "drink",
+      "salty",
+      "savoury",
+      "traditional",
+      "yogurt"
+    ]
+  },
+  {
+    "id": "STL",
+    "name": "Strawberry Lassi",
+    "price": 280,
+    "category": "Lassi",
+    "available": true,
+    "description": "Creamy yogurt lassi blended with sweet strawberry for a fruity, refreshing twist.",
+    "tags": [
+      "lassi",
+      "drink",
+      "strawberry",
+      "fruity",
+      "sweet",
+      "yogurt"
+    ]
+  },
+  {
+    "id": "ML",
+    "name": "Mango Lassi",
+    "price": 280,
+    "category": "Lassi",
+    "available": true,
+    "description": "Rich and creamy mango lassi made with ripe mango pulp and chilled yogurt. A Pakistani summer staple.",
+    "tags": [
+      "lassi",
+      "drink",
+      "mango",
+      "fruity",
+      "sweet",
+      "seasonal",
+      "bestseller"
+    ]
+  },
+  {
+    "id": "SLB",
+    "name": "Sweet Lassi with Badam",
+    "price": 290,
+    "category": "Lassi",
+    "available": true,
+    "description": "Classic sweet lassi topped with crushed almonds (badam) for a nutty, premium finish.",
+    "tags": [
+      "lassi",
+      "drink",
+      "sweet",
+      "almond",
+      "badam",
+      "premium",
+      "yogurt"
+    ]
+  },
+  {
+    "id": "CBM",
+    "name": "Chicken Burger Meal",
+    "price": 380,
+    "category": "Burger",
+    "available": true,
+    "description": "A juicy grilled chicken burger served as a complete meal with crispy fries and a soft drink. Add cheese for Rs. 40.",
+    "tags": [
+      "burger",
+      "meal",
+      "chicken",
+      "fries",
+      "drink",
+      "combo",
+      "grilled"
+    ]
+  },
+  {
+    "id": "ZBM",
+    "name": "Zinger Burger Meal",
+    "price": 430,
+    "category": "Burger",
+    "available": true,
+    "description": "The fan-favourite crispy zinger burger in a full meal deal with fries and a soft drink. Add cheese for Rs. 40.",
+    "tags": [
+      "burger",
+      "meal",
+      "zinger",
+      "crispy",
+      "fried",
+      "fries",
+      "drink",
+      "popular"
+    ]
+  },
+  {
+    "id": "CSBM",
+    "name": "Chicken Spicy Burger Meal",
+    "price": 460,
+    "category": "Burger",
+    "available": true,
+    "description": "A bold, heat-packed spicy chicken burger with fries and soft drink. For those who like it hot.",
+    "tags": [
+      "burger",
+      "meal",
+      "spicy",
+      "chicken",
+      "hot",
+      "fries",
+      "drink",
+      "combo"
+    ]
+  },
+  {
+    "id": "JGBM",
+    "name": "Juicito Grilled Burger Meal",
+    "price": 490,
+    "category": "Burger",
+    "available": true,
+    "description": "Our signature grilled burger with a flame-kissed patty, fresh toppings, fries and a soft drink. The premium choice.",
+    "tags": [
+      "burger",
+      "meal",
+      "grilled",
+      "signature",
+      "premium",
+      "fries",
+      "drink",
+      "juicito special"
+    ]
+  },
+  {
+    "id": "SABM",
+    "name": "Shami Anda Burger Meal",
+    "price": 340,
+    "category": "Burger",
+    "available": true,
+    "description": "A classic desi-style shami patty topped with a fried egg, served as a meal with fries and soft drink.",
+    "tags": [
+      "burger",
+      "meal",
+      "shami",
+      "egg",
+      "desi",
+      "affordable",
+      "fries",
+      "drink"
+    ]
+  },
+  {
+    "id": "JSBM",
+    "name": "Juicito Special Burger Meal",
+    "price": 470,
+    "category": "Burger",
+    "available": true,
+    "description": "Our special house burger with double toppings and secret sauce, served with fries and a soft drink.",
+    "tags": [
+      "burger",
+      "meal",
+      "special",
+      "signature",
+      "house sauce",
+      "fries",
+      "drink",
+      "juicito special"
+    ]
+  },
+  {
+    "id": "VS",
+    "name": "Vegetable Soup",
+    "price": 180,
+    "category": "Soup",
+    "available": true,
+    "description": "A light, comforting clear vegetable soup with fresh seasonal vegetables. Add an egg for Rs. 40.",
+    "tags": [
+      "soup",
+      "vegetable",
+      "light",
+      "healthy",
+      "vegetarian",
+      "winter",
+      "warm"
+    ]
+  },
+  {
+    "id": "CHS",
+    "name": "Chicken Soup",
+    "price": 180,
+    "category": "Soup",
+    "available": true,
+    "description": "A hearty, warming chicken soup with tender shredded chicken in a flavourful broth. Add an egg for Rs. 40.",
+    "tags": [
+      "soup",
+      "chicken",
+      "hearty",
+      "warm",
+      "winter",
+      "comfort food"
+    ]
+  },
+  {
+    "id": "HS",
+    "name": "Hot & Sour Soup",
+    "price": 210,
+    "category": "Soup",
+    "available": true,
+    "description": "A tangy and spicy Chinese-style soup with a bold kick of vinegar and chilli. Add an egg for Rs. 40.",
+    "tags": [
+      "soup",
+      "hot",
+      "sour",
+      "spicy",
+      "chinese",
+      "tangy",
+      "winter"
+    ]
+  },
+  {
+    "id": "CCS",
+    "name": "Chicken Corn Soup",
+    "price": 210,
+    "category": "Soup",
+    "available": true,
+    "description": "Thick and creamy chicken corn soup — a Pakistani-Chinese favourite. Rich, filling, and perfect for cold weather. Add an egg for Rs. 40.",
+    "tags": [
+      "soup",
+      "chicken",
+      "corn",
+      "creamy",
+      "thick",
+      "winter",
+      "bestseller",
+      "chinese"
+    ]
+  },
+  {
+    "id": "CHBR",
+    "name": "Chocolate Brownie",
+    "price": 260,
+    "category": "Dessert",
+    "available": true,
+    "description": "A warm, fudgy chocolate brownie served on its own. Dense, rich, and chocolatey through and through.",
+    "tags": [
+      "dessert",
+      "brownie",
+      "chocolate",
+      "warm",
+      "sweet",
+      "fudgy"
+    ]
+  },
+  {
+    "id": "CHB1",
+    "name": "Chocolate Brownie 1 Scoop",
+    "price": 340,
+    "category": "Dessert",
+    "available": true,
+    "description": "Hot chocolate brownie served with one scoop of ice cream and special topping. The perfect hot-cold combo.",
+    "tags": [
+      "dessert",
+      "brownie",
+      "chocolate",
+      "ice cream",
+      "1 scoop",
+      "warm",
+      "indulgent"
+    ]
+  },
+  {
+    "id": "CHB2",
+    "name": "Chocolate Brownie 2 Scoops",
+    "price": 410,
+    "category": "Dessert",
+    "available": true,
+    "description": "Hot chocolate brownie loaded with two scoops of ice cream and special topping. For serious dessert lovers.",
+    "tags": [
+      "dessert",
+      "brownie",
+      "chocolate",
+      "ice cream",
+      "2 scoops",
+      "loaded",
+      "indulgent",
+      "premium"
+    ]
+  }
+]

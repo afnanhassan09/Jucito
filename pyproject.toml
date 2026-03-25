@@ -1,0 +1,10 @@
+[project]
+name = "purewaterbot"
+version = "0.1.0"
+description = "PureWaterBot - WhatsApp-style menu and cart bot (phase 1 skeleton)"
+requires-python = ">=3.10"
+dependencies = []
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
