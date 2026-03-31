@@ -9,9 +9,9 @@ from purewaterbot.bot import BotEngine
 from purewaterbot.menu import load_menu
 from purewaterbot.session import SessionManager
 
-# --- Configuration ---
-LLM_BASE_URL = os.environ.get("LLM_BASE_URL", "https://generativelanguage.googleapis.com/v1beta/openai")
-LLM_MODEL = os.environ.get("LLM_MODEL", "gemini-2.5-flash")
+# --- Configuration (OpenAI Chat Completions API) ---
+LLM_BASE_URL = os.environ.get("LLM_BASE_URL", "https://api.openai.com/v1")
+LLM_MODEL = os.environ.get("LLM_MODEL", "gpt-4o-mini")
 MAX_HISTORY = 30  # Max conversation messages to keep in context
 
 
@@ -314,7 +314,7 @@ def _extract_address_from_text(user_text: str) -> "str | None":
     return None
 
 
-class OllamaBot:
+class LLMBot:
     def __init__(self, engine: BotEngine):
         self.engine = engine
 
@@ -328,12 +328,18 @@ class OllamaBot:
             "temperature": 0.3,
             "max_tokens": 600,
         }
-        
-        headers = {}
-        gemini_api_key = os.environ.get("GEMINI_API_KEY")
-        if gemini_api_key:
-            headers["Authorization"] = f"Bearer {gemini_api_key}"
-            
+
+        api_key = (os.environ.get("OPENAI_API_KEY") or "").strip()
+        if not api_key:
+            return {
+                "content": "Error: OPENAI_API_KEY is not set. Add it to your environment or .env file.",
+            }
+
+        headers = {
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json",
+        }
+
         try:
             resp = requests.post(url, json=payload, headers=headers, timeout=60)
             resp.raise_for_status()

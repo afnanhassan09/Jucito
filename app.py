@@ -12,7 +12,7 @@ repo_root = Path(__file__).resolve().parent
 sys.path.append(str(repo_root))
 
 from purewaterbot.bot import BotEngine
-from purewaterbot.llm import OllamaBot
+from purewaterbot.llm import LLMBot
 from purewaterbot.db import get_menu_collection, get_orders_collection
 from bson import json_util
 import json
@@ -25,7 +25,7 @@ app = Flask(__name__)
 # Initialize the bot engine once when the app starts.
 # This keeps the sessions in memory as long as the process is running.
 engine = BotEngine.from_repo_root(repo_root)
-ollama_bot = OllamaBot(engine)
+llm_bot = LLMBot(engine)
 
 twilio_client = Client(
     os.environ.get("TWILIO_ACCOUNT_SID"),
@@ -89,7 +89,7 @@ def whatsapp_reply():
 
     # 2. Use the BotEngine to get a standard response
     try:
-        reply_text = ollama_bot.process_user_message(user_id=user_id, text=msg)
+        reply_text = llm_bot.process_user_message(user_id=user_id, text=msg)
     except Exception as e:
         reply_text = f"An error occurred: {str(e)}"
 

@@ -13,7 +13,7 @@ This repo contains the **Phase 1 skeleton**: data structures, an in-memory `Sess
 
 From the repo root:
 
-```bash
+```bashl
 ollama serve
 ollama pull qwen2.5:7b
 node cli.js
