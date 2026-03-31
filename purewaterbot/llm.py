@@ -345,6 +345,15 @@ class LLMBot:
             resp.raise_for_status()
             data = resp.json()
             return data.get("choices", [{}])[0].get("message", {})
+        except requests.HTTPError as e:
+            detail = ""
+            try:
+                body = e.response.json()
+                err = body.get("error") or {}
+                detail = (err.get("message") or str(body)) if isinstance(err, dict) else str(body)
+            except Exception:
+                detail = e.response.text or str(e)
+            return {"content": f"Error communicating with AI Brain: {detail}"}
         except Exception as e:
             return {"content": f"Error communicating with AI Brain: {str(e)}"}
 
@@ -457,8 +466,8 @@ class LLMBot:
                 # Continue loop -> call LLM again with tool outputs
                 continue
             
-            # No tool calls -> Final Response
-            final_text = response_msg.get("content", "")
+            # No tool calls -> Final Response (OpenAI may return content: null)
+            final_text = response_msg.get("content") or ""
 
             # --- GUARDRAIL: Detect hallucinated address-set claims ---
             # If the LLM claims it set the address in its text but never
