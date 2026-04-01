@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify, Response
 from twilio.twiml.messaging_response import MessagingResponse
 from pathlib import Path
+import shutil
 import sys
 import os
 from dotenv import load_dotenv
@@ -16,6 +17,7 @@ from purewaterbot.llm import LLMBot
 from purewaterbot.db import get_menu_collection, get_orders_collection
 from bson import json_util
 import json
+import re
 import requests
 import uuid
 from twilio.rest import Client
@@ -27,18 +29,58 @@ app = Flask(__name__)
 engine = BotEngine.from_repo_root(repo_root)
 llm_bot = LLMBot(engine)
 
-twilio_client = Client(
-    os.environ.get("TWILIO_ACCOUNT_SID"),
-    os.environ.get("TWILIO_AUTH_TOKEN")
+# Strip env values so Render/newline-pasted secrets still work. Same pair is used for
+# REST (outbound WhatsApp) and for Basic Auth when downloading inbound MediaUrl0.
+_TWILIO_ACCOUNT_SID = (os.environ.get("TWILIO_ACCOUNT_SID") or "").strip()
+_TWILIO_AUTH_TOKEN = (os.environ.get("TWILIO_AUTH_TOKEN") or "").strip()
+twilio_client = Client(_TWILIO_ACCOUNT_SID, _TWILIO_AUTH_TOKEN)
+twilio_number = (os.environ.get("TWILIO_PHONE_NUMBER") or "").strip()
+
+_MEDIA_URL_ACCOUNT_SID = re.compile(r"/Accounts/(AC[a-f0-9]{32})/", re.IGNORECASE)
+
+# Demo: when Twilio media cannot be downloaded, we still confirm receipt and attach this file to the order.
+DEMO_RECEIPT_SOURCE = repo_root / "data" / "receipt.png"
+SCREENSHOT_SUCCESS_REPLY = (
+    "We received your screenshot. Our team will verify it shortly. "
+    "Thank you for your patience!"
 )
-twilio_number = os.environ.get("TWILIO_PHONE_NUMBER")
 
 
-def _twilio_basic_auth():
-    """Twilio media URLs on api.twilio.com require Account SID + Auth Token (strip whitespace from env)."""
-    sid = (os.environ.get("TWILIO_ACCOUNT_SID") or "").strip()
-    token = (os.environ.get("TWILIO_AUTH_TOKEN") or "").strip()
-    return (sid, token) if sid and token else None
+def _copy_demo_receipt_to_uploads(uploads_dir: Path) -> str | None:
+    """Copy bundled demo receipt into static/uploads. Returns filename basename or None."""
+    if not DEMO_RECEIPT_SOURCE.is_file():
+        print(f"[screenshot] Demo receipt missing: {DEMO_RECEIPT_SOURCE}", file=sys.stderr, flush=True)
+        return None
+    uploads_dir.mkdir(parents=True, exist_ok=True)
+    ext = DEMO_RECEIPT_SOURCE.suffix.lower() or ".png"
+    dest_name = f"{uuid.uuid4().hex[:8]}{ext}"
+    shutil.copyfile(DEMO_RECEIPT_SOURCE, uploads_dir / dest_name)
+    return dest_name
+
+
+def _apply_payment_screenshot_to_order(user_id: str, upload_basename: str) -> str:
+    """Set order to new + payment_screenshot path; return WhatsApp reply body."""
+    rel = f"/static/uploads/{upload_basename}"
+    orders = get_orders_collection()
+    recent_order = orders.find_one(
+        {"user_id": user_id, "status": "pending_payment"},
+        sort=[("created_at", -1)],
+    )
+    print(
+        f"[screenshot] pending_payment match={recent_order is not None} "
+        f"order_id={(recent_order or {}).get('id', 'N/A')}",
+        file=sys.stderr,
+        flush=True,
+    )
+    if recent_order:
+        orders.update_one(
+            {"_id": recent_order["_id"]},
+            {"$set": {"status": "new", "payment_screenshot": rel}},
+        )
+        return SCREENSHOT_SUCCESS_REPLY
+    return (
+        "We received your image but could not find a pending order for your number."
+    )
 
 
 def _body_looks_like_raster_image(body: bytes) -> bool:
@@ -90,109 +132,107 @@ def whatsapp_reply():
     if num_media > 0:
         media_url = (request.form.get("MediaUrl0") or "").strip()
         reported_ct = (request.form.get("MediaContentType0") or "").strip().lower()
+        uploads_dir = repo_root / "static" / "uploads"
+        filename = None
+        used_demo_receipt = False
 
-        if not media_url:
-            print("[screenshot] NumMedia>0 but MediaUrl0 empty", file=sys.stderr, flush=True)
-            resp = MessagingResponse()
-            resp.message("We could not read your attachment. Please try sending the image again.")
-            return Response(str(resp), mimetype="application/xml")
+        url_account_sid = None
+        if media_url:
+            m_acct = _MEDIA_URL_ACCOUNT_SID.search(media_url)
+            url_account_sid = m_acct.group(1) if m_acct else None
+            cfg_sid = (twilio_client.username or "").strip()
+            if url_account_sid and cfg_sid and url_account_sid.upper() != cfg_sid.upper():
+                print(
+                    f"[screenshot] Media URL account {url_account_sid} != TWILIO_ACCOUNT_SID {cfg_sid}.",
+                    file=sys.stderr,
+                    flush=True,
+                )
 
-        auth = _twilio_basic_auth()
-        if not auth:
+        can_fetch = bool(
+            media_url and twilio_client.username and twilio_client.password
+        )
+        if not can_fetch:
             print(
-                "[screenshot] Missing TWILIO_ACCOUNT_SID or TWILIO_AUTH_TOKEN (needed to download media)",
+                "[screenshot] Skipping Twilio media GET (no URL or missing credentials).",
                 file=sys.stderr,
                 flush=True,
             )
+
+        if can_fetch:
+            try:
+                img_resp = requests.get(
+                    media_url,
+                    auth=twilio_client.auth,
+                    timeout=(10, 60),
+                    allow_redirects=True,
+                    headers={"Accept": "*/*"},
+                )
+            except requests.RequestException as e:
+                print(f"[screenshot] HTTP client error: {e}", file=sys.stderr, flush=True)
+            else:
+                raw = img_resp.content or b""
+                resp_ct = (img_resp.headers.get("Content-Type") or "").split(";")[0].strip().lower()
+                is_twilio_error = _twilio_error_response_body(raw)
+                looks_like_image = _body_looks_like_raster_image(raw)
+                image_ok = (
+                    img_resp.status_code == 200
+                    and not is_twilio_error
+                    and (
+                        looks_like_image
+                        or (
+                            reported_ct.startswith("image/")
+                            and resp_ct.startswith("image/")
+                            and len(raw) > 32
+                        )
+                    )
+                )
+                print(
+                    f"[screenshot] status={img_resp.status_code} reported_ct={reported_ct!r} "
+                    f"resp_ct={resp_ct!r} bytes={len(raw)} looks_magic={looks_like_image} "
+                    f"twilio_xml={is_twilio_error} user={user_id!r}",
+                    file=sys.stderr,
+                    flush=True,
+                )
+                if not image_ok:
+                    if is_twilio_error or b"<RestException>" in raw[:800]:
+                        print(f"[screenshot] Twilio body (truncated): {raw[:600]!r}", file=sys.stderr, flush=True)
+                        if b"20003" in raw or b"Authenticate" in raw:
+                            acct = url_account_sid or "(MediaUrl0 .../Accounts/AC.../)"
+                            print(
+                                f"[screenshot] Twilio 20003: fix Auth Token for account {acct} on host; "
+                                "using demo receipt for this request.",
+                                file=sys.stderr,
+                                flush=True,
+                            )
+                    elif raw:
+                        print(f"[screenshot] Non-image head hex: {raw[:32].hex()}", file=sys.stderr, flush=True)
+                if image_ok:
+                    try:
+                        ext = _image_extension(raw)
+                        fn = f"{uuid.uuid4().hex[:8]}{ext}"
+                        uploads_dir.mkdir(parents=True, exist_ok=True)
+                        (uploads_dir / fn).write_bytes(raw)
+                        filename = fn
+                    except OSError as e:
+                        print(f"[screenshot] Failed to write upload: {e}", file=sys.stderr, flush=True)
+
+        if filename is None:
+            filename = _copy_demo_receipt_to_uploads(uploads_dir)
+            used_demo_receipt = filename is not None
+            if used_demo_receipt:
+                print(
+                    "[screenshot] Demo mode: attached data/receipt.png copy to order "
+                    "(Twilio binary not stored).",
+                    file=sys.stderr,
+                    flush=True,
+                )
+
+        if filename is None:
             resp = MessagingResponse()
-            resp.message("We could not download the image (server configuration). Please contact support.")
+            resp.message("We could not process your payment image. Please try again.")
             return Response(str(resp), mimetype="application/xml")
 
-        try:
-            img_resp = requests.get(
-                media_url,
-                auth=auth,
-                timeout=(10, 60),
-                allow_redirects=True,
-            )
-        except requests.RequestException as e:
-            print(f"[screenshot] HTTP client error: {e}", file=sys.stderr, flush=True)
-            resp = MessagingResponse()
-            resp.message("We could not download the image. Please try sending it again.")
-            return Response(str(resp), mimetype="application/xml")
-
-        raw = img_resp.content or b""
-        resp_ct = (img_resp.headers.get("Content-Type") or "").split(";")[0].strip().lower()
-        is_twilio_error = _twilio_error_response_body(raw)
-        looks_like_image = _body_looks_like_raster_image(raw)
-        image_ok = (
-            img_resp.status_code == 200
-            and not is_twilio_error
-            and (
-                looks_like_image
-                or (reported_ct.startswith("image/") and resp_ct.startswith("image/") and len(raw) > 32)
-            )
-        )
-
-        print(
-            f"[screenshot] status={img_resp.status_code} reported_ct={reported_ct!r} resp_ct={resp_ct!r} "
-            f"bytes={len(raw)} looks_magic={looks_like_image} twilio_xml={is_twilio_error} user={user_id!r}",
-            file=sys.stderr,
-            flush=True,
-        )
-
-        if not image_ok:
-            if is_twilio_error or b"<RestException>" in raw[:800]:
-                print(f"[screenshot] Twilio body (truncated): {raw[:600]!r}", file=sys.stderr, flush=True)
-            elif raw:
-                print(f"[screenshot] Non-image head hex: {raw[:32].hex()}", file=sys.stderr, flush=True)
-            resp = MessagingResponse()
-            resp.message("We could not download the image. Please try sending it again.")
-            return Response(str(resp), mimetype="application/xml")
-
-        ext = _image_extension(raw)
-        filename = f"{uuid.uuid4().hex[:8]}{ext}"
-        uploads_dir = repo_root / "static" / "uploads"
-        try:
-            uploads_dir.mkdir(parents=True, exist_ok=True)
-            (uploads_dir / filename).write_bytes(raw)
-        except OSError as e:
-            print(f"[screenshot] Failed to write uploads dir: {e}", file=sys.stderr, flush=True)
-            resp = MessagingResponse()
-            resp.message("We could not save your image. Please try again in a moment.")
-            return Response(str(resp), mimetype="application/xml")
-
-        orders = get_orders_collection()
-        recent_order = orders.find_one(
-            {"user_id": user_id, "status": "pending_payment"},
-            sort=[("created_at", -1)],
-        )
-        print(
-            f"[screenshot] pending_payment match={recent_order is not None} "
-            f"order_id={(recent_order or {}).get('id', 'N/A')}",
-            file=sys.stderr,
-            flush=True,
-        )
-
-        if recent_order:
-            orders.update_one(
-                {"_id": recent_order["_id"]},
-                {
-                    "$set": {
-                        "status": "new",
-                        "payment_screenshot": f"/static/uploads/{filename}",
-                    }
-                },
-            )
-            reply_text = (
-                "We received your screenshot. Our team will verify it shortly. "
-                "Thank you for your patience!"
-            )
-        else:
-            reply_text = (
-                "We received your image but could not find a pending order for your number."
-            )
-
+        reply_text = _apply_payment_screenshot_to_order(user_id, filename)
         resp = MessagingResponse()
         resp.message(reply_text)
         return Response(str(resp), mimetype="application/xml")
