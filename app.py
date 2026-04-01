@@ -77,11 +77,16 @@ def whatsapp_reply():
                             "payment_screenshot": f"/static/uploads/{filename}"
                         }}
                     )
-                    reply_text = "Aapka screenshot mil gaya hai. Humari team jaldi verify karegi. Intezaar karein, shukriya!"
+                    reply_text = (
+                        "We received your screenshot. Our team will verify it shortly. "
+                        "Thank you for your patience!"
+                    )
                 else:
-                    reply_text = "Aapki tasveer mil gayi hai lekin mujhe aapka koi pending order nahi mila."
+                    reply_text = (
+                        "We received your image but could not find a pending order for your number."
+                    )
             else:
-                reply_text = "Tasveer download karne mein masla hua. Bara-e-meharbani wapis bhejein."
+                reply_text = "We could not download the image. Please try sending it again."
             
             resp = MessagingResponse()
             resp.message(reply_text)
@@ -189,7 +194,7 @@ def update_order_status(order_id):
     if new_status == "preparing":
         try:
             msg = twilio_client.messages.create(
-                body=f"Aapki payment confirm ho gayi hai. Aapka order #{order_id} tayar ho raha hai!",
+                body=f"Your payment is confirmed. Order #{order_id} is being prepared!",
                 from_=twilio_number,
                 to=order["user_id"]
             )
@@ -200,7 +205,7 @@ def update_order_status(order_id):
     elif new_status == "dispatched":
         try:
             msg = twilio_client.messages.create(
-                body=f"Aapka order #{order_id} dispatch ho gaya hai! Thodi der mein aapke paas pohunch jayega. Shukriya!",
+                body=f"Order #{order_id} has been dispatched! It should reach you shortly. Thank you!",
                 from_=twilio_number,
                 to=order["user_id"]
             )

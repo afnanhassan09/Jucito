@@ -260,10 +260,11 @@ _ADDRESS_SET_PATTERNS = re.compile(
 # Patterns that indicate the LLM *claimed* it placed/confirmed an order in text
 _ORDER_PLACED_PATTERNS = re.compile(
     r"(?:"
-    r"order\s+(?:confirm|place|ho\s*gaya|placed|confirmed)"
+    r"order\s+(?:confirm|place|placed|confirmed)"
     r"|order\s+#\s*\w+"
-    r"|order\s+number\s+(?:is|hai)"
-    r"|payment\s+(?:ka\s+)?screenshot(?:|e?s)?\s+(?:bhej)?"
+    r"|order\s+number\s+is"
+    r"|payment\s+screenshots?"
+    r"|send\s+(?:us\s+)?(?:your\s+)?payment\s+screenshot"
     r")",
     re.IGNORECASE,
 )
@@ -286,9 +287,9 @@ def _extract_address_from_text(user_text: str) -> "str | None":
     Best-effort extraction of an address from the user's raw message.
     Handles patterns like:
       - "house 27B"
-      - "delivery address house 27b hai"
+      - "delivery address is house 27b"
       - "address: house 27B"
-      - "mera address house 27B hai"
+      - "my address is house 27B"
     Falls back to the entire message if it's short enough to plausibly be an address.
     """
     if not user_text:
@@ -297,14 +298,19 @@ def _extract_address_from_text(user_text: str) -> "str | None":
 
     # Try to extract after common prefixes
     prefixes = re.compile(
-        r"(?:delivery\s+)?address\s*(?:hai|he|h|is)?\s*[:=-]?\s*",
+        r"(?:delivery\s+)?(?:my\s+)?address\s*(?:is)?\s*[:=-]?\s*",
         re.IGNORECASE,
     )
     m = prefixes.search(text)
     if m:
         addr = text[m.end():].strip()
         # Remove trailing filler words
-        addr = re.sub(r"\s+(?:hai|he|h|kr\s*dain|set\s*kr\s*dain)\.?$", "", addr, flags=re.IGNORECASE).strip()
+        addr = re.sub(
+            r"\s+(?:please|thanks?|thank\s+you)\.?$",
+            "",
+            addr,
+            flags=re.IGNORECASE,
+        ).strip()
         if addr:
             return addr
 
@@ -511,7 +517,7 @@ class LLMBot:
                         order_id = result["order_id"]
                         # Inject real order ID into the response if it has a fake one
                         final_text = re.sub(
-                            r"(?:order\s*(?:number|#|no\.?)\s*(?:is|hai)?\s*:?\s*)\w+",
+                            r"(?:order\s*(?:number|#|no\.?)\s*(?:is)?\s*:?\s*)\w+",
                             f"Order #{order_id}",
                             final_text,
                             count=1,
